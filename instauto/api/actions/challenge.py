@@ -35,7 +35,7 @@ class ChallengeMixin:
         #       Currently, only the verification pin challenge is supported, and other challenges, such as the
         #       'verify this was you', do not work.
         resp_json2 = resp_data2.json()
-        if int(resp_json2.get("step_data", {}).get("choice", 0)) == 1:
+        if True:  #　default by email
             # server only support choice 1, this is requiry some other devices to confirm send verification, like web
             _ = self._request(
                 endpoint=api_path, method=Method.POST, data={
