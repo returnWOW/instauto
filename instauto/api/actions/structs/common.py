@@ -22,7 +22,7 @@ class Base:
     def fill(self, client) -> "Base":
         """Fills all of the datapoints that need to be retrieved from the client."""
         attrs = dir(self)
-        print(type(self, attrs))
+        print(type(self), attrs, self)
         for k, func in self._datapoint_from_client.items():
             if k in attrs:
                 setattr(self, k, func(client))
