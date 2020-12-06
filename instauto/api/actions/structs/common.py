@@ -3,6 +3,7 @@ from typing import Callable, Dict
 import pprint
 import inspect
 from dataclasses import asdict
+import requests
 
 
 class Base:
@@ -22,10 +23,13 @@ class Base:
     def fill(self, client) -> "Base":
         """Fills all of the datapoints that need to be retrieved from the client."""
         attrs = dir(self)
-        print(type(self), attrs, self)
+        # print(type(self), attrs, self)
         for k, func in self._datapoint_from_client.items():
             if k in attrs:
-                setattr(self, k, func(client))
+                try:
+                    setattr(self, k, func(client))
+                except requests.cookies.CookieConflictError as e:
+                    print(e)
         return self
 
     def to_dict(self) -> Dict[str, str]:
