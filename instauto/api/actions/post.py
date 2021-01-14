@@ -192,12 +192,13 @@ class PostMixin:
     def post_get_commenters(self, obj: RetrieveCommenters) -> [any]:
         endpoint = 'media/{media_id}/comments'.format(media_id=obj.media_id)
         resp = self._request(endpoint=endpoint, method=Method.GET)
-        
-        with open("commenters.json", "w", encoding="utf-8") as fout:
-            import json
-            json.dump(resp.json(), fout)
-            
         users_as_json = [c['user'] for c in resp.json()['comments']]
+        return users_as_json
+
+    def post_get_commenters_with_text(self, obj: RetrieveCommenters) -> [any]:
+        endpoint = 'media/{media_id}/comments'.format(media_id=obj.media_id)
+        resp = self._request(endpoint=endpoint, method=Method.GET)
+        users_as_json = [c for c in resp.json()['comments']]
         return users_as_json
 
     def post_carousel(self, posts: List[PostFeed], caption: str, quality: int) -> Dict[str, Response]:
