@@ -21,6 +21,52 @@ logger = logging.getLogger(__name__)
 # DATACLASSES
 #####################################
 
+@dataclass
+class UserTag:
+    """
+    Contains all information about a UserTag. This can be used to set the user tag for an UserTags object.
+
+    :param user_id: Id of the tagged user
+    :param x: relative x-coordinate with 0 <= x <= 1, with 0 for left and 1 for right
+    :param y: relative y-coordinate with 0 <= y <= 1, with 0 for top and 1 for bottom
+    """
+    user_id: str = ""
+    x: float = None
+    y: float = None
+
+    def to_dict(self) -> dict:
+        data = {
+            "user_id": self.user_id,
+            "position": [
+                round(self.x, ndigits=8),
+                round(self.y, ndigits=8)
+            ]
+        }
+        return data
+
+    def __repr__(self):
+        return pprint.pformat(self.to_dict())
+
+
+@dataclass
+class UserTags:
+    """
+    Contains all information about UserTags. This can be used to set usertags for an Instagram post.
+    :param usertags: this takes a list of UserTag objects
+    """
+    usertags: List[UserTag] = None
+
+    def to_dict(self) -> dict:
+        data = {
+            "in": []
+        }
+        for usertag in self.usertags:
+            data["in"].append(usertag)
+        return data
+
+    def __repr__(self):
+        return pprint.pformat(self.to_dict())
+
 
 @dataclass
 class Location:
@@ -138,7 +184,7 @@ class UpdateCaption(_Base):
 class _PostBase(cmmn.Base):
     def __init__(self, path: Union[str, Path], source_type: PostLocation, edits: Optional[Edits],
                  extra: Optional[Extra], device: Optional[Device], *args, **kwargs):
-        self.upload_id = str(time.time()).split('.')[0]
+        self.upload_id = str(time.time() + random.randint(1, 100000)).split('.')[0]
         self.timezone_offset = str(time.localtime().tm_gmtoff)
         self.scene_capture_type = ''
         self.media_folder = 'Pictures'
@@ -185,13 +231,15 @@ class PostFeed(_PostBase):
     device_id: str = None
 
     def __init__(self, path: Union[str, Path], caption: str,
-                 location: Optional[Location] = None, edits: Optional[Edits] = None,
-                 extra: Optional[Extra] = None, device: Optional[Device] = None, *args, **kwargs):
+                 location: Optional[Location] = None, usertags: Optional[UserTags] = None,
+                 edits: Optional[Edits] = None, extra: Optional[Extra] = None,
+                 device: Optional[Device] = None, *args, **kwargs):
         self.suggested_venue_position = -1
         self.multi_sharing = '-1'
         self.caption = caption
         self.location = location
         self.size = imagesize.get(path)
+        self.usertags = usertags
         super().__init__(path, PostLocation.Feed, edits, extra, device, *args, **kwargs)
 
 

@@ -5,6 +5,7 @@
 [![PyPI license](https://img.shields.io/pypi/l/instauto)](https://pypi.python.org/project/instauto/)
 [![Downloads](https://pepy.tech/badge/instauto/week)](https://pepy.tech/project/instauto)
 ![coverage](https://github.com/stanvanrooy/instauto/blob/master/coverage.svg)
+[![Documentation Status](https://readthedocs.org/projects/instauto/badge/?version=latest)](https://instauto.readthedocs.io/en/latest/?badge=latest)
 
 
 Instauto is a Python package for automating various parts of Instagram, making use of the private Instagram API.
@@ -15,7 +16,7 @@ For feature requests, ideas, comments, etc., please open an issue.
 The package can be installed with the following pip command:
 ```pip install instauto```
 
-## Usage
+## Usage ([documentation](https://instauto.readthedocs.io/))
 Here is a simple example that likes a post.
 
 ```python
@@ -31,6 +32,32 @@ if __name__ == '__main__':
     )
     client.post_like(like)
 ```
+
+And here is a simple example that uses the `Bot` class. This example, retrieves 100 followers 
+from `@Instagram`, 61 accounts that `@Instagram` follows, 200 accounts that have liked 
+a recent post of` @Instagram` and 200  accounts that recently commented on a post of `@Instagram`.
+
+Each retrieved account has a 25% chance to be followed, a 25% chance that 3 posts 
+will be liked, and a 35% chance that 1 comment will be left.  
+
+```python
+from instauto.bot.bot import Bot
+bot = Bot("your_username", "your_password", 20.0)
+
+bot.input. \
+    from_followers_of("instagram", 100). \
+    from_following_of("instagram", 61). \
+    from_likers_of("instagram", 200). \
+    from_commenters_of("instagram", 200)
+
+bot. \
+    like(25, 3). \  
+    comment(35, 1, ["hey, I like your posts!", "Looks good!"]). \
+    follow(25)
+
+bot.start()
+```
+
 Other examples of how to use the package, can be found in the [examples directory](https://github.com/stanvanrooy/instauto/tree/master/examples).
 
 ## Contributing
@@ -60,6 +87,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/returnWOW"><img src="https://avatars3.githubusercontent.com/u/16145271?v=4" width="100px;" alt=""/><br /><sub><b>wowopo</b></sub></a><br /><a href="https://github.com/stanvanrooy/instauto/commits?author=returnWOW" title="Code">💻</a></td>
+    <td align="center"><a href="https://rooy.works"><img src="https://avatars1.githubusercontent.com/u/49564025?v=4" width="100px;" alt=""/><br /><sub><b>Stan van Rooy</b></sub></a><br /><a href="https://github.com/stanvanrooy/instauto/commits?author=stanvanrooy" title="Documentation">📖</a> <a href="https://github.com/stanvanrooy/instauto/commits?author=stanvanrooy" title="Code">💻</a> <a href="https://github.com/stanvanrooy/instauto/commits?author=stanvanrooy" title="Tests">⚠️</a></td>
+    <td align="center"><a href="https://github.com/tibotix"><img src="https://avatars3.githubusercontent.com/u/38123657?v=4" width="100px;" alt=""/><br /><sub><b>Tizian Seehaus</b></sub></a><br /><a href="https://github.com/stanvanrooy/instauto/commits?author=tibotix" title="Code">💻</a></td>
   </tr>
 </table>
 

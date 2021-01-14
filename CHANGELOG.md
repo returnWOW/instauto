@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 
+
+### 1.0.5 (2020-12-16)
+
+### Bugfixes
+
+* use a bit more random upload id ([1435d3b](https://github.com/stanvanrooy/instauto/commit/1435d3b33b277cca024eaa063d591a1ffb635d04))
+
+
+### 1.0.4 (2020-12-10)
+
+### Features
+
+* upload carousels ([1f36d65](https://github.com/stanvanrooy/instauto/commit/1f36d65c180cde44f2f865a520da742969d28798))
+* change password ([db97b25](https://github.com/stanvanrooy/instauto/commit/db97b2563af69a0dcfeb7aabdfa5ca6f4193923f))
+* track limitations ([b82d014](https://github.com/stanvanrooy/instauto/commit/b82d01467ec6b1e03b1e73e0369cc49055bded98))
+
+### Bugfixes
+* use same device id everywhere ([908335c](https://github.com/stanvanrooy/instauto/commit/b82d01467ec6b1e03b1e73e0369cc49055bded98))
+* several other minor bugfixes
+
+
+### 1.0.3 (2020-12-8)
+
+### Features
+
+* add tagging users in posts ([e0a4057](https://github.com/stanvanrooy/instauto/commit/e0a40578c0e92ee1b6d28554d448187687802b13))
+* implement bot for automating tasks on Instagram ([a6fbbd6](https://github.com/stanvanrooy/instauto/commit/a6fbbd671e79c51d3e394ecbfd19be037e3ca230))
+
+### Bug fixes
+
+* actually call start scheduler ([c2fec6e](https://github.com/stanvanrooy/instauto/commit/c2fec6ec43f8cc383ea58dedef9cd08b704c1f37))
+* session_Id doesn't exist ([cf6bd5a](https://github.com/stanvanrooy/instauto/commit/cf6bd5a2c8ab5865feace9becece8ac1bb361030))
+* fix this was me challenge ([d0852d5](https://github.com/stanvanrooy/instauto/commit/d0852d5b1e058c05395b7daf28594944e8646ed9))
+
 ### 1.0.2 (2020-12-2)
 * add direct message functionality ([2683ce8](https://github.com/stanvanrooy/instauto/commit/2683ce806a36e515052dbb16af4b97e75daa2e1b))
 

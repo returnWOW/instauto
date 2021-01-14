@@ -1,3 +1,5 @@
+import os
+
 import requests
 import time
 import json
@@ -19,9 +21,10 @@ class RequestMixin:
     device_profile: DeviceProfile
     state: State
     _user_agent: str
-    _encrypt_password: Callable
+    _encode_password: Callable
     _session: requests.Session
     _request_finished_callbacks: list
+    _handle_challenge: Callable
 
     def _build_user_agent(self) -> str:
         """Builds a user agent, making use from all required values in `self.ig_profile`, `self.device_profile` and
@@ -121,7 +124,7 @@ class RequestMixin:
         if public_api_key_id is not None: self.state.public_api_key_id = public_api_key_id
 
         public_api_key = headers.get('ig-set-password-encryption-pub-key')
-        if public_api_key is not None: self.state.public_api_key = public_api_key; self._encrypt_password()
+        if public_api_key is not None: self.state.public_api_key = public_api_key; self._encode_password()
 
     def _request(self, endpoint: str, method: Method, query: dict = None, data: Union[dict, bytes] = None, headers: Dict[str, str]
     = None, default_headers: bool = None, signed: bool = None) -> requests.Response:
@@ -256,7 +259,13 @@ class RequestMixin:
             if eh:
                 return
         if parsed.get('message') == 'feedback_required':
-            # TODO: implement a handler for this error
+            if os.environ.get("ENABLE_INSTAUTO_USAGE_METRICS", True):
+                # This logs which actions cause limitations on Instagram accounts.
+                # I use this data to focus my development on area's where it's most needed.
+                requests.post('https://instauto.rooy.dev/feedback_required', data={
+                    'feedback_url': parsed.get('feedback_url'),
+                    'category': parsed.get('category')
+                })
             raise BadResponse("Something unexpected happened. Please check the IG app.")
         if parsed.get('message') == 'rate_limit_error':
             raise TimeoutError("Calm down. Please try again in a few minutes.")

@@ -1,9 +1,9 @@
-from requests import Session
+from requests import Session, Response
 import datetime
 import base64
 import struct
 
-from typing import Dict, Callable
+from typing import Dict, Callable, Optional
 from instauto.api.actions.stubs import _request
 
 from Cryptodome.Cipher import AES, PKCS1_v1_5
@@ -70,6 +70,20 @@ class AuthenticationMixin:
             if self.state.logged_in_account_data is None:
                 raise e
 
+    def change_password(self, new_password: str, current_password: str = None) -> Response:
+        cp = current_password or self._unencrypted_password
+        if cp is None:
+            raise ValueError("No current password provided")
+
+        return self._request('accounts/change_password/', Method.POST, data={
+            '_csrftoken': self._session.cookies['csrftoken'],
+            '_uid': self.state.user_id,
+            '_uuid': self.state.uuid,
+            'enc_old_password': self._encode_password(current_password),
+            'enc_new_password1': self._encode_password(new_password),
+            'enc_new_password2': self._encode_password(new_password)
+        }, signed=True)
+
     def _build_initial_headers(self) -> Dict[str, str]:
         """Builds a dictionary that contains all header values required for the first request sent, before login,
         to retrieve necessary cookies and header values to send other requests.
@@ -95,11 +109,12 @@ class AuthenticationMixin:
         }
         return d
 
-    def _encrypt_password(self) -> None:
+    def _encode_password(self, password: str = None) -> Optional[str]:
         """Encrypts the raw password into a form that Instagram accepts."""
         # the api key will be retrieved from the first request, so it will not
         # be present during the initial request
         if not self.state.public_api_key: return
+        if not password and not self._unencrypted_password: return
         key = Random.get_random_bytes(32)
         iv = Random.get_random_bytes(12)
         time = int(datetime.datetime.now().timestamp())
@@ -113,7 +128,7 @@ class AuthenticationMixin:
         aes = AES.new(key, AES.MODE_GCM, nonce=iv)
         aes.update(str(time).encode('utf-8'))
 
-        encrypted_password, cipher_tag = aes.encrypt_and_digest(bytes(self._unencrypted_password, 'utf-8'))
+        encrypted_password, cipher_tag = aes.encrypt_and_digest(bytes(password or self._unencrypted_password, 'utf-8'))
 
         encrypted = bytes([1,
                            int(self.state.public_api_key_id),
@@ -124,7 +139,10 @@ class AuthenticationMixin:
                            *list(encrypted_password)])
         encrypted = base64.b64encode(encrypted).decode('utf-8')
 
-        self._encrypted_password = f'#PWD_INSTAGRAM:4:{time}:{encrypted}'
+        encrypted_password = f'#PWD_INSTAGRAM:4:{time}:{encrypted}'
+        if password is not None:
+            return encrypted_password
+        self._encrypted_password = encrypted_password
 
     def _update_token(self):
         """Only used on initial login."""
@@ -134,6 +152,6 @@ class AuthenticationMixin:
         _ = self._request('zr/token/result/', Method.GET, query=query, headers=self._build_initial_headers(),
                           default_headers=False)
 
-    def _update_session_id(self) -> None:
+    def _refresh_session(self) -> None:
         """Updates the session id, to simulate a close and open of the app."""
-        self.state.session_id = self._gen_uuid()
+        self.state.refresh(self._gen_uuid)
