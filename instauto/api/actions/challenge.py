@@ -46,7 +46,7 @@ class ChallengeMixin:
                     "post": 1
                 }
             )
-            logger.warning("You may should confirm in some other logged device this was me to obtain the verification code.")
+            logger.warning("You need to complete a challenge manually, by using another logged in devied.")
         else:
             _ = self._request(
                 endpoint=api_path, method=Method.POST, data={
